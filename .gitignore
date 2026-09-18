@@ -1,0 +1,24 @@
+# Secrets
+.env
+
+# Application configuration / databases
+config/
+
+# Media and downloads
+*.mkv
+*.mp4
+*.avi
+*.mov
+*.m4v
+*.ts
+*.srt
+*.ass
+*.sub
+*.idx
+
+# Local Docker data
+data/
+
+# OS/editor files
+.DS_Store
+.vscode/
