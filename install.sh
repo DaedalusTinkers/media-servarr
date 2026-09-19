@@ -24,6 +24,7 @@ if [[ ! -f /etc/os-release ]]; then
     exit 1
 fi
 
+# shellcheck disable=SC1091
 source /etc/os-release
 
 case "${ID}" in
@@ -109,7 +110,7 @@ install_docker_debian() {
     sudo install -m 0755 -d /etc/apt/keyrings
 
     sudo curl -fsSL \
-        https://download.docker.com/linux/${ID}/gpg \
+        https://download.docker.com/linux/"${ID}"/gpg \
         -o /etc/apt/keyrings/docker.asc
 
     sudo chmod a+r /etc/apt/keyrings/docker.asc
@@ -117,7 +118,7 @@ install_docker_debian() {
     echo \
         "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] \
         https://download.docker.com/linux/${ID} \
-        $(. /etc/os-release && echo "${VERSION_CODENAME}") stable" |
+        ${VERSION_CODENAME} stable" |
         sudo tee /etc/apt/sources.list.d/docker.list >/dev/null
 
     sudo apt-get update
@@ -390,9 +391,6 @@ sudo find "${DATA_ROOT}" -type f -exec chmod 0664 {} +
 echo "Data directory ownership and permissions configured."
 echo
 
-
-# MARK: the SELinux package installation currently assumes dnf,
-#       so we'll make that OS-aware when we do the final cleanup.
 
 # --------------------------------------------
 # Configure SELinux for bind-mounted directories
