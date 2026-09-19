@@ -442,6 +442,7 @@ Session\TempPath=${DATA_ROOT}/downloads/incoming
 Session\TempPathEnabled=true
 
 [Preferences]
+WebUI\LocalHostAuth=false
 WebUI\Username=qbt-admin
 WebUI\Password_PBKDF2=${QBITTORRENT_PASSWORD_HASH}
 EOF
