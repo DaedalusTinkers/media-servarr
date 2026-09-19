@@ -406,8 +406,37 @@ echo
 
 echo "Configuring qBittorrent..."
 
+QBITTORRENT_PASSWORD=""
+
 if [[ ! -f "${PROJECT_DIR}/config/qbittorrent/qBittorrent/qBittorrent.conf" ]]; then
     mkdir -p "${PROJECT_DIR}/config/qbittorrent/qBittorrent"
+
+    QBITTORRENT_PASSWORD="$(python3 -c 'import secrets; print(secrets.token_urlsafe(18))')"
+
+    QBITTORRENT_PASSWORD_HASH="$(
+        QBITTORRENT_PASSWORD="${QBITTORRENT_PASSWORD}" python3 - <<'PY'
+import base64
+import hashlib
+import os
+
+password = os.environ["QBITTORRENT_PASSWORD"].encode()
+salt = os.urandom(16)
+
+derived = hashlib.pbkdf2_hmac(
+    "sha512",
+    password,
+    salt,
+    100000,
+    64,
+)
+
+print(
+    f'@ByteArray('
+    f'{base64.b64encode(salt).decode()}:'
+    f'{base64.b64encode(derived).decode()})'
+)
+PY
+    )"
 
     cat > "${PROJECT_DIR}/config/qbittorrent/qBittorrent/qBittorrent.conf" <<EOF
 [BitTorrent]
@@ -417,12 +446,12 @@ Session\TempPathEnabled=true
 
 [Preferences]
 WebUI\Username=qbt-admin
+WebUI\Password_PBKDF2=${QBITTORRENT_PASSWORD_HASH}
 EOF
 
     chmod 600 "${PROJECT_DIR}/config/qbittorrent/qBittorrent/qBittorrent.conf"
 fi
 
-# echo "qBittorrent configured."
 echo
 
 
@@ -503,6 +532,29 @@ echo "Docker Compose configuration: OK"
 echo
 
 
+show_qbittorrent_credentials() {
+    echo
+    printf '\033[38;5;228m'
+    echo "============================================"
+    echo "        qBittorrent Credentials"
+    echo "============================================"
+    echo
+
+    if [[ -n "${QBITTORRENT_PASSWORD}" ]]; then
+        echo "  Username: qbt-admin"
+        echo "  Password: ${QBITTORRENT_PASSWORD}"
+    else
+        echo "  qBittorrent configuration already exists."
+        echo "  Existing credentials were not changed."
+        echo "  The existing password cannot be recovered."
+    fi
+
+    echo
+    printf '\033[0m'
+    echo
+}
+
+
 # --------------------------------------------
 # Start media-servarr
 # --------------------------------------------
@@ -522,6 +574,9 @@ if [[ ! "${START_STACK}" =~ ^([Yy]|[Yy][Ee][Ss]|)$ ]]; then
     echo "  cd ${PROJECT_DIR}"
     echo "  docker compose up -d"
     echo
+
+    show_qbittorrent_credentials
+
     exit 0
 fi
 
@@ -551,3 +606,4 @@ echo
 echo "FlareSolverr is available internally to Prowlarr"
 echo "at http://flaresolverr:8191"
 echo
+
