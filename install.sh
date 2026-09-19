@@ -377,15 +377,24 @@ echo
 echo "Setting data directory ownership and permissions..."
 
 # The user owns /data, while the docker group retains access.
+sudo chown "${PUID}:docker" "${DATA_ROOT}"
+
 sudo chown -R \
     "${PUID}:docker" \
-    "${DATA_ROOT}"
+    "${DATA_ROOT}/downloads" \
+    "${DATA_ROOT}/media"
 
-# Directories are group-writable and inherit the docker group.
-sudo find "${DATA_ROOT}" -type d -exec chmod 2775 {} +
+sudo find \
+    "${DATA_ROOT}/downloads" \
+    "${DATA_ROOT}/media" \
+    -type d \
+    -exec chmod 2775 {} +
 
-# Files remain readable/writable by the owner and group.
-sudo find "${DATA_ROOT}" -type f -exec chmod 0664 {} +
+sudo find \
+    "${DATA_ROOT}/downloads" \
+    "${DATA_ROOT}/media" \
+    -type f \
+    -exec chmod 0664 {} +
 
 echo "Data directory ownership and permissions configured."
 echo
