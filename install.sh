@@ -607,3 +607,4 @@ echo "FlareSolverr is available internally to Prowlarr"
 echo "at http://flaresolverr:8191"
 echo
 
+show_qbittorrent_credentials
