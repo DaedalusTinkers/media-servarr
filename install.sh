@@ -376,9 +376,6 @@ echo
 
 echo "Setting data directory ownership and permissions..."
 
-# The user owns /data, while the docker group retains access.
-sudo chown "${PUID}:docker" "${DATA_ROOT}"
-
 sudo chown -R \
     "${PUID}:docker" \
     "${DATA_ROOT}/downloads" \
