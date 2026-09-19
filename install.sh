@@ -401,6 +401,32 @@ echo
 
 
 # --------------------------------------------
+# Configure qBittorrent
+# --------------------------------------------
+
+echo "Configuring qBittorrent..."
+
+if [[ ! -f "${PROJECT_DIR}/config/qbittorrent/qBittorrent/qBittorrent.conf" ]]; then
+    mkdir -p "${PROJECT_DIR}/config/qbittorrent/qBittorrent"
+
+    cat > "${PROJECT_DIR}/config/qbittorrent/qBittorrent/qBittorrent.conf" <<EOF
+[BitTorrent]
+Session\DefaultSavePath=${DATA_ROOT}/downloads/complete
+Session\TempPath=${DATA_ROOT}/downloads/incoming
+Session\TempPathEnabled=true
+
+[Preferences]
+WebUI\Username=qbt-admin
+EOF
+
+    chmod 600 "${PROJECT_DIR}/config/qbittorrent/qBittorrent/qBittorrent.conf"
+fi
+
+# echo "qBittorrent configured."
+echo
+
+
+# --------------------------------------------
 # Configure SELinux for bind-mounted directories
 # --------------------------------------------
 
