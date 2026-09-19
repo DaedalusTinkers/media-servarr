@@ -364,25 +364,30 @@ sudo mkdir -p \
     "${DATA_ROOT}/downloads/incoming" \
     "${DATA_ROOT}/downloads/complete" \
     "${DATA_ROOT}/media/movies" \
-    "${DATA_ROOT}/media/tv"
+    "${DATA_ROOT}/media/shows"
 
 echo "Media directories created."
 echo
 
 
 # --------------------------------------------
-# Set directory ownership
+# Set directory ownership and permissions
 # --------------------------------------------
 
-echo "Setting directory ownership..."
+echo "Setting data directory ownership and permissions..."
 
+# The user owns /data, while the docker group retains access.
 sudo chown -R \
-    "${PUID}:${PGID}" \
-    "${PROJECT_DIR}/config" \
-    "${DATA_ROOT}/downloads" \
-    "${DATA_ROOT}/media"
+    "${PUID}:docker" \
+    "${DATA_ROOT}"
 
-echo "Directory ownership configured."
+# Directories are group-writable and inherit the docker group.
+sudo find "${DATA_ROOT}" -type d -exec chmod 2775 {} +
+
+# Files remain readable/writable by the owner and group.
+sudo find "${DATA_ROOT}" -type f -exec chmod 0664 {} +
+
+echo "Data directory ownership and permissions configured."
 echo
 
 
