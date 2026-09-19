@@ -179,7 +179,6 @@ docker_cmd() {
     fi
 }
 
-
 # --------------------------------------------
 # Check Docker and Docker Compose
 # --------------------------------------------
@@ -228,9 +227,9 @@ else
             exit 1
             ;;
     esac
-
-    configure_docker_access
 fi
+
+configure_docker_access
 
 
 # --------------------------------------------
